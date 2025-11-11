@@ -1,0 +1,46 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Transactions</title>
+    <style>
+        body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f6f6f6; text-align: left; }
+        tr:nth-child(even) { background: #fafafa; }
+        .amount { text-align: right; }
+    </style>
+</head>
+<body>
+<h1>Transactions</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Sender</th>
+        <th>Receiver</th>
+        <th class="amount">Amount (€)</th>
+        <th>Description</th>
+        <th>Created</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="t : ${transactions}">
+        <td th:text="${t.id}">1</td>
+        <td th:text="${t.sender != null ? t.sender.email : ''}">alice@example.com</td>
+        <td th:text="${t.receiver != null ? t.receiver.email : ''}">bob@example.com</td>
+        <td class="amount" th:text="${#numbers.formatDecimal(t.amount, 1, 'COMMA', 2, 'POINT')}">10,00</td>
+        <td th:text="${t.description}">Déj</td>
+        <td th:text="${#temporals.format(t.createdAt, 'yyyy-MM-dd HH:mm')}">2025-11-11 12:00</td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(transactions)}">
+        <td colspan="6">Aucune transaction.</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a href="/" th:href="@{/}">Accueil</a></p>
+</body>
+</html>
