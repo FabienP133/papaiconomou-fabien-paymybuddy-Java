@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity @Table(name = "users")
 public class User {
@@ -30,6 +32,14 @@ public class User {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
+
+    @ManyToMany
+    @JoinTable(
+            name = "connections",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> connections = new HashSet<>();
 
 
     public Long getId() {
@@ -94,6 +104,14 @@ public class User {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<User> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(Set<User> connections) {
+        this.connections = connections;
     }
 
 }

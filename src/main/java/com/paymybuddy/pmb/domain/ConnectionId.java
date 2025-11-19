@@ -9,12 +9,18 @@ public class ConnectionId implements Serializable {
     private Long userId;
     private Long friendId;
 
-    public ConnectionId() {}
+    public ConnectionId() {
+    }
+
     public ConnectionId(Long userId, Long friendId) { this.userId=userId; this.friendId=friendId; }
 
     // equals/hashCode
-    @Override public boolean equals(Object o){ if(this==o) return true; if(!(o instanceof ConnectionId ci)) return false; return Objects.equals(userId,ci.userId)&&Objects.equals(friendId,ci.friendId); }
-    @Override public int hashCode(){ return Objects.hash(userId,friendId); }
+    @Override public boolean equals(Object o){
+        if(this==o) return true;
+        if(!(o instanceof ConnectionId ci)) return false;
+        return Objects.equals(userId,ci.userId)&&Objects.equals(friendId,ci.friendId); }
+    @Override public int hashCode(){
+        return Objects.hash(userId,friendId); }
 
 
 

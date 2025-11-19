@@ -12,11 +12,11 @@ public class Transaction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id")
     private User sender;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "receiver_id")
     private User receiver;
 

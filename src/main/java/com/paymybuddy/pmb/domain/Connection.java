@@ -6,7 +6,7 @@ import java.time.Instant;
 @Entity @Table(name = "connections")
 public class Connection {
     @EmbeddedId
-    private ConnectionId id;
+    private ConnectionId id = new ConnectionId();
 
     @ManyToOne(optional = false) @MapsId("userId")
     @JoinColumn(name = "user_id")
