@@ -1,0 +1,2 @@
+ALTER TABLE transactions
+    ADD COLUMN fee DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER amount;

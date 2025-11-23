@@ -5,8 +5,8 @@
     <title>Transactions</title>
     <style>
         body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
-        form { display: grid; grid-template-columns: 2fr 3fr 1fr auto; gap: 8px; margin-bottom: 16px; }
-        input, select, button { padding: 8px; }
+        form.tx-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; margin-bottom: 16px; }
+        input, button { padding: 8px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #ddd; padding: 8px; }
         th { background: #f6f6f6; text-align: left; }
@@ -16,6 +16,9 @@
         .flash.ok { background:#e9f8ef; border:1px solid #9ad2ae; }
         .flash.err { background:#fdeeee; border:1px solid #e39a9a; }
         .help { color:#666; font-size: 12px; }
+        .filter-box { margin: 16px 0; padding: 10px; border-radius: 6px; background: #f8f8ff; border: 1px solid #ddd; }
+        .filter-box form { display: inline-flex; gap: 8px; align-items: center; }
+        .filter-box input[type="text"] { min-width: 260px; }
     </style>
 </head>
 <body>
@@ -24,19 +27,35 @@
 <div th:if="${success}" class="flash ok" th:text="${success}"></div>
 <div th:if="${error}" class="flash err" th:text="${error}"></div>
 
-<form th:action="@{/transactions}" method="post" th:object="${form}">
+<!-- Formulaire d'envoi -->
+<form class="tx-form" th:action="@{/transactions}" method="post" th:object="${form}">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-    <input th:field="*{senderEmail}" placeholder="Email expéditeur" />
+    <input th:field="*{senderEmail}"   placeholder="Email expéditeur" />
     <input th:field="*{receiverEmail}" placeholder="Email destinataire" />
-    <input th:field="*{description}"    placeholder="Description (optionnel)" />
-    <input th:field="*{amount}"         placeholder="Montant (ex: 10.00)" />
+    <input th:field="*{description}"   placeholder="Description" />
+    <input th:field="*{amount}"        placeholder="Montant (ex: 10.00)" />
     <button type="submit">Payer</button>
 </form>
-
 <p class="help">
-    Vous payez toujours depuis le compte de l'utilisateur connecté vers l'ami sélectionné dans vos contacts.
+    Astuce : utilises des emails existants en base (ex: alice@example.com &amp; bob@example.com si tu seeds).
 </p>
+
+<!-- Bloc de filtre par email -->
+<div class="filter-box">
+    <form th:action="@{/transactions}" method="get">
+        <label>
+            Voir uniquement les transactions de l'email :
+            <input type="text" name="emailFilter"
+                   th:value="${emailFilter}"
+                   placeholder="ex : alice@example.com" />
+        </label>
+        <button type="submit">Filtrer</button>
+        <a th:href="@{/transactions}" style="margin-left: 8px;">Réinitialiser</a>
+    </form>
+    <p class="help">
+        Le filtre affiche les transactions où cet email est expéditeur <strong>ou</strong> destinataire.
+    </p>
+</div>
 
 <table>
     <thead>
@@ -44,7 +63,9 @@
         <th>ID</th>
         <th>Sender</th>
         <th>Receiver</th>
-        <th class="amount">Amount (€)</th>
+        <th class="amount">Montant (€)</th>
+        <th class="amount">Frais (€)</th>
+        <th class="amount">Total débité (€)</th>
         <th>Description</th>
         <th>Created</th>
     </tr>
@@ -54,17 +75,32 @@
         <td th:text="${t.id}">1</td>
         <td th:text="${t.sender != null ? t.sender.email : ''}">alice@example.com</td>
         <td th:text="${t.receiver != null ? t.receiver.email : ''}">bob@example.com</td>
+
+        <!-- Montant principal -->
         <td class="amount"
             th:text="${#numbers.formatDecimal(t.amount, 1, 'COMMA', 2, 'POINT')}">
             10,00
         </td>
-        <td th:text="${t.description}">Déj</td>
-        <td th:text="${#temporals.format(t.createdAt, 'yyyy-MM-dd HH:mm')}">
-            2025-11-11 12:00
+
+        <!-- Frais (0,00 si null pour les anciennes transactions) -->
+        <td class="amount"
+            th:text="${t.fee != null ? #numbers.formatDecimal(t.fee, 1, 'COMMA', 2, 'POINT') : '0,00'}">
+            0,05
         </td>
+
+        <!-- Total débité = montant + frais (ou juste montant si fee null) -->
+        <td class="amount"
+            th:text="${t.fee != null
+                      ? #numbers.formatDecimal(t.amount.add(t.fee), 1, 'COMMA', 2, 'POINT')
+                      : #numbers.formatDecimal(t.amount, 1, 'COMMA', 2, 'POINT')}">
+            10,05
+        </td>
+
+        <td th:text="${t.description}">Déj</td>
+        <td th:text="${#temporals.format(t.createdAt, 'yyyy-MM-dd HH:mm')}">2025-11-11 12:00</td>
     </tr>
     <tr th:if="${#lists.isEmpty(transactions)}">
-        <td colspan="6">Aucune transaction.</td>
+        <td colspan="8">Aucune transaction.</td>
     </tr>
     </tbody>
 </table>

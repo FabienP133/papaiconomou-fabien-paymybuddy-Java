@@ -1,0 +1,48 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Utilisateurs</title>
+    <style>
+        body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f6f6f6; text-align: left; }
+        tr:nth-child(even) { background: #fafafa; }
+        .amount { text-align: right; }
+        a { text-decoration: none; color: #0366d6; }
+    </style>
+</head>
+<body>
+
+<h1>Liste des utilisateurs</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th class="amount">Solde (€)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}">1</td>
+        <td th:text="${u.email}">alice@example.com</td>
+        <td class="amount"
+            th:text="${#numbers.formatDecimal(u.balance, 1, 'COMMA', 2, 'POINT')}">
+            100,00
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(users)}">
+        <td colspan="3">Aucun utilisateur.</td>
+    </tr>
+    </tbody>
+</table>
+
+<p style="margin-top: 16px;">
+    <a th:href="@{/}">← Retour à l'accueil</a>
+</p>
+
+</body>
+</html>

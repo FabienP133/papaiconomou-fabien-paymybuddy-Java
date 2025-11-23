@@ -23,6 +23,17 @@ public class Transaction {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "fee", nullable = false, precision = 10, scale = 2)
+    private BigDecimal fee = BigDecimal.ZERO;
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
+
     private String description;
 
     @Column(name = "created_at", nullable = false, updatable = false)

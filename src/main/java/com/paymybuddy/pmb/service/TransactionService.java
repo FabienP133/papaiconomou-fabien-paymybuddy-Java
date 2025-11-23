@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -16,6 +18,7 @@ public class TransactionService {
     private final UserRepository users;
     private final TransactionRepository txs;
     private final ConnectionRepository connections;
+    private static final BigDecimal FEE_RATE = new BigDecimal("0.005");
 
     public TransactionService(UserRepository users,
                               TransactionRepository txs,
@@ -43,29 +46,38 @@ public class TransactionService {
         User receiver = users.findByEmail(receiverEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Destinataire introuvable : " + receiverEmail));
 
-        // Vérif qu'ils sont connectés
-        boolean connected = connections.existsByUserAndFriend(sender, receiver);
-        if (!connected) {
-            throw new IllegalStateException("Ce destinataire n'est pas dans vos connexions.");
-        }
+        // Calcul des frais
+        BigDecimal fee = amount
+                .multiply(FEE_RATE)               // 0,5 % du montant
+                .setScale(2, RoundingMode.HALF_UP);
 
-        // Vérif soldes
-        if (sender.getBalance().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Solde insuffisant.");
+        BigDecimal totalDebit = amount.add(fee);  // ce que l'expéditeur paie réellement
+
+        // Vérif du solde : montant + frais
+        if (sender.getBalance().compareTo(totalDebit) < 0) {
+            throw new IllegalArgumentException("Solde insuffisant (montant + frais).");
         }
 
         // Débit/crédit
-        sender.setBalance(sender.getBalance().subtract(amount));
+        sender.setBalance(sender.getBalance().subtract(totalDebit));
         receiver.setBalance(receiver.getBalance().add(amount));
         users.save(sender);
         users.save(receiver);
 
-        // Enregistrer la transaction
+        // Enregistrer la transaction avec les frais
         Transaction t = new Transaction();
         t.setSender(sender);
         t.setReceiver(receiver);
-        t.setAmount(amount);
+        t.setAmount(amount);   // ce que le destinataire reçoit
+        t.setFee(fee);         // frais pris par la plateforme
         t.setDescription(description);
+
         return txs.save(t);
     }
+
+    @Transactional(readOnly = true)
+    public List<Transaction> listForUser(String email) {
+        return txs.findBySender_EmailOrReceiver_EmailOrderByCreatedAtDesc(email, email);
+    }
+
 }
