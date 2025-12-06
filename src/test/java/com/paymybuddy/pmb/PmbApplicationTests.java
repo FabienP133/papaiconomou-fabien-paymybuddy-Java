@@ -1,9 +1,10 @@
 package com.paymybuddy.pmb;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import org.junit.jupiter.api.Test;
+
+
+
 class PmbApplicationTests {
 
 	@Test

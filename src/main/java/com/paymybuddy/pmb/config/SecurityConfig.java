@@ -2,9 +2,8 @@ package com.paymybuddy.pmb.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,13 +22,21 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/login",
+                                "/register"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                // Formulaire de login par défaut de Spring
-                .formLogin(Customizer.withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
+                .formLogin(form -> form
+                        .loginPage("/login")          // page Thymeleaf perso
+                        .defaultSuccessUrl("/transactions", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
 
         // Pour pouvoir utiliser H2 console si tu l’utilises
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
@@ -40,8 +47,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // TEMPORAIRE : pas de hash, mot de passe en clair dans password_hash
-        // (on pourra passer à BCrypt plus tard)
+        // TEMPORAIRE : mot de passe en clair dans la BDD
         return NoOpPasswordEncoder.getInstance();
     }
 }
