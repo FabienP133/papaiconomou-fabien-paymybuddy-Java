@@ -86,7 +86,7 @@ public class ProfileController {
             User user = users.findByEmail(currentEmail)
                     .orElseThrow(() -> new IllegalStateException("Utilisateur courant introuvable."));
 
-            // On ne change pas l’email ici
+            // Je ne change pas l’email ici
             user.setFirstName(form.getFirstName());
             user.setLastName(form.getLastName());
 

@@ -180,13 +180,11 @@
                 <label for="email">Email</label>
                 <input id="email" type="email" th:field="*{email}" readonly />
 
-                <!-- si tu veux afficher le solde, tu peux passer userBalance dans le modèle -->
                 <label>Solde</label>
                 <div class="balance" th:text="${userBalance} ?: 'N/A'">100.00 €</div>
             </div>
 
             <div class="actions">
-                <!-- ✅ Ce bouton soumet bien le formulaire -->
                 <button type="submit" class="btn-primary">Modifier</button>
             </div>
         </form>

@@ -40,7 +40,7 @@ public class RegisterController {
         }
 
         User u = new User();
-        u.setFirstName(form.getUsername()); // simple : on met tout dans firstName
+        u.setFirstName(form.getUsername()); // on met tout dans firstName
         u.setLastName("");
         u.setEmail(form.getEmail());
         u.setPasswordHash(passwordEncoder.encode(form.getPassword()));

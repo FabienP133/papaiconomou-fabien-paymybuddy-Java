@@ -17,10 +17,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ConnectionController {
 
     private final ConnectionService connections;
-    private final UserRepository users;   // ✅ ajouté
+    private final UserRepository users;   //  ajouté
 
     public ConnectionController(ConnectionService connections,
-                                UserRepository users) {  // ✅ injecté
+                                UserRepository users) {  //  injecté
         this.connections = connections;
         this.users = users;
     }

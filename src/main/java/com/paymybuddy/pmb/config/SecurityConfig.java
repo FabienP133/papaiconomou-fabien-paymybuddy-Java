@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
-        // Pour pouvoir utiliser H2 console si tu l’utilises
+        // Pour pouvoir utiliser H2 console
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
@@ -47,7 +47,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // TEMPORAIRE : mot de passe en clair dans la BDD
+        // Mot de passe en clair dans la BDD
         return NoOpPasswordEncoder.getInstance();
     }
 }
