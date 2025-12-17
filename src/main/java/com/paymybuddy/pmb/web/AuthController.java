@@ -11,4 +11,11 @@ public class AuthController {
         // renvoie src/main/resources/templates/login.html
         return "login";
     }
+
+    @GetMapping("/logout")
+    public String logout() {
+        // renvoie src/main/resources/templates/login.html
+        return "login";
+    }
+
 }
